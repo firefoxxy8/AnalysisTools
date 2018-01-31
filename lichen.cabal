@@ -1,6 +1,6 @@
 name:                lichen
-version:             0.3.1
-synopsis:            Plagiarism Detection and Other Static Analysis
+version:             0.3.4
+synopsis:            Tools for plagiarism detection, anonymization of assignment directories, and software analysis.
 description:         Please see README.md
 homepage:            https://github.com/Submitty/AnalysisTools
 author:              Samuel Breese
@@ -12,42 +12,43 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lichen.Util
-                     , Lichen.Error
-                     , Lichen.Languages
-                     , Lichen.Config
+  exposed-modules:     Lichen.Utility.Miscellaneous
+                     , Lichen.Utility.Parsing
+                     , Lichen.Utility.Rendering
 
-                     , Lichen.Lexer
-                     , Lichen.Lexer.Text
-                     , Lichen.Lexer.C
-                     , Lichen.Lexer.Python
-                     , Lichen.Lexer.Java
+                     , Lichen.Architecture.Error
+                     , Lichen.Architecture.Source
+                     , Lichen.Architecture.Language
+                     , Lichen.Architecture.Lexer
+                     , Lichen.Architecture.Parser
+                     , Lichen.Architecture.Config
+                     , Lichen.Architecture.Tool
+                     , Lichen.Architecture.Rendering
 
-                     , Lichen.Parser
-                     , Lichen.Parser.Python
+                     , Lichen.Implementation.Sources.Submitty
+                     , Lichen.Implementation.Languages.Python
+                     , Lichen.Implementation.Languages.C
+                     , Lichen.Implementation.Languages.Java
+                     , Lichen.Implementation.Languages.Text
+                     , Lichen.Implementation.Lexers.Python
+                     , Lichen.Implementation.Lexers.C
+                     , Lichen.Implementation.Lexers.Java
+                     , Lichen.Implementation.Lexers.Text
+                     , Lichen.Implementation.Parsers.Python
 
-                     , Lichen.Plagiarism.Main
-                     , Lichen.Plagiarism.Config
-                     , Lichen.Plagiarism.Submitty
-                     , Lichen.Plagiarism.Winnow
-                     , Lichen.Plagiarism.Compare
-                     , Lichen.Plagiarism.Walk
-                     , Lichen.Plagiarism.Concatenate
-                     , Lichen.Plagiarism.Highlight
-                     , Lichen.Plagiarism.Provided
-                     , Lichen.Plagiarism.AssignmentSettings
-                     , Lichen.Plagiarism.Report
-                     , Lichen.Plagiarism.Render
-                     , Lichen.Plagiarism.Render.Index
-                     , Lichen.Plagiarism.Render.Compare
-
-                     , Lichen.Count.Main
-                     , Lichen.Count.Config
-                     , Lichen.Count.Counters
-
-                     , Lichen.Diagnostics.Main
-                     , Lichen.Diagnostics.Config
-                     , Lichen.Diagnostics.Render
+                     , Lichen.Interface.Configs.Count
+                     , Lichen.Interface.Configs.Plagiarism
+                     , Lichen.Interface.Configs.Diagnostics
+                     , Lichen.Interface.Tools.Count
+                     , Lichen.Interface.Tools.Count.Counters
+                     , Lichen.Interface.Tools.Plagiarism
+                     , Lichen.Interface.Tools.Plagiarism.Winnow
+                     , Lichen.Interface.Tools.Plagiarism.Compare
+                     , Lichen.Interface.Tools.Diagnostics
+                     , Lichen.Interface.Renderings.Plagiarism
+                     , Lichen.Interface.Renderings.Plagiarism.Index
+                     , Lichen.Interface.Renderings.Plagiarism.Compare
+                     , Lichen.Interface.Renderings.Diagnostics
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , split
@@ -71,12 +72,14 @@ library
                      , QuickCheck
                      , hspec
   ghc-options:         -O2 -Wall
+  default-extensions:  OverloadedStrings
   default-language:    Haskell2010
 
 executable plagiarism
   hs-source-dirs:      app/plagiarism
   main-is:             Main.hs
   ghc-options:         -O2 -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-extensions:  OverloadedStrings
   build-depends:       base
                      , lichen
   default-language:    Haskell2010
@@ -85,6 +88,7 @@ executable count
   hs-source-dirs:      app/count
   main-is:             Main.hs
   ghc-options:         -O2 -Wall
+  default-extensions:  OverloadedStrings
   build-depends:       base
                      , lichen
   default-language:    Haskell2010
@@ -93,6 +97,7 @@ executable diagnostics
   hs-source-dirs:      app/diagnostics
   main-is:             Main.hs
   ghc-options:         -O2 -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-extensions:  OverloadedStrings
   build-depends:       base
                      , lichen
   default-language:    Haskell2010
@@ -108,6 +113,7 @@ test-suite lichen-test
                      , hspec
                      , megaparsec
   ghc-options:         -fno-warn-orphans
+  default-extensions:  OverloadedStrings
   default-language:    Haskell2010
 
 source-repository head
