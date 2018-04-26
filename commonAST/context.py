@@ -14,7 +14,7 @@ class Context:
 		self.dummyNode = dict({"tags": "\*"})
 
 	def __eq__(self, other):
-		if not self.language == other.language: return False
+		if not self.language == other.language and not (self.language == "common" or other.language == "common"): return False
 
 		if(not self.lookaheadTags == None and not other.lookaheadTags == None and 
 			(utils.tagsMatch(self.dummyLookahead, other.dummyLookahead, self.dummyNode, other.dummyNode, self.language, False) == -1)):

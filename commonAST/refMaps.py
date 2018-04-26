@@ -46,6 +46,7 @@ augAssignNoCntxt = eqTag.EqTag(["augmented", "assign"], emptyCntxt)
 binOpNoCntxt = eqTag.EqTag(["binary", "operator"], emptyCntxt) 
 binOpNoCntxtCpp = eqTag.EqTag(["binaryop"], emptyCntxtCpp) 
 unOpNoCntxt = eqTag.EqTag(["unary", "operator"], emptyCntxt) 
+unOpNoCntxtCpp = eqTag.EqTag(["unaryoperator"], emptyCntxtCpp) 
 listNoCntxt = eqTag.EqTag(["list"], emptyCntxt) 
 setNoCntxt = eqTag.EqTag(["set"], emptyCntxt) 
 dictNoCntxt = eqTag.EqTag(["dict"], emptyCntxt) 
@@ -70,6 +71,7 @@ ifCppCntxt = eqTag.EqTag(["ifstatement"], context.Context("cpp",["\*"], ["\*"], 
 forLoopCppCntxt = eqTag.EqTag(["forloop"], context.Context("cpp",["\*"],["\*"],["\*"],["\*"]))
 assignCppCntxt = eqTag.EqTag(["assignment"], context.Context("cpp",["\*"],["\*"],["\*"],["\*"]))
 whileCppCntxt = eqTag.EqTag(["whileloop"], context.Context("cpp",["\*"],["\*"],["\*"],["\*"]))
+doWhileCppCntxt = eqTag.EqTag(["do"], context.Context("cpp",["\*"],["\*"],["\*"],["\*"]))
 
 
 tagEqlMap = dict({"classdef": [classNoCntxt], #classdef matches to class in any context
@@ -77,10 +79,11 @@ tagEqlMap = dict({"classdef": [classNoCntxt], #classdef matches to class in any 
 			"compoundstmt": [bodyIfCntxt, bodyForCntxt, bodyWhileCntxt, bodyFuncCntxt, elseIfCntxt],
 			"augassign": [augAssignNoCntxt],
 			"binop": [binOpNoCntxt, binOpNoCntxtCpp],
-			"unaryop": [unOpNoCntxt],
+			"unaryop": [unOpNoCntxt, unOpNoCntxtCpp],
 			"comparison": [eqBinOpCntxt, gtBinOpCntxt, gteBinOpCntxt, ltBinOpCntxt, lteBinOpCntxt],
 			"for": [forLoopCppCntxt],
 			"while": [whileCppCntxt],
+			"dowhile": [doWhileCppCntxt],
 			"assign": [assignCppCntxt],
 			"identifier": [dottedNameImportCntxt, dottedNameGpImportCntxt, basesCntxt],
 			"bases": [paramClassContext],
@@ -179,13 +182,13 @@ If the tag and one of the contexts match, the node is marked as an additional st
 
 #TODO: Fix this - some of these are language py but they should apply to the common AST
 classContext = context.Context("py",["\*"],["\*"],["class"],["\*"])
-basesContext = context.Context("py",["\*"],["\*"],["bases"],["\*"]) #commonAST not PY
+basesContext = context.Context("common",["\*"],["\*"],["bases"],["\*"]) #commonAST not PY
 paramCntxt = context.Context("py",["\*"],["\*"],["parameters"],["class"]) 
 importCntxt = context.Context("py",["\*"],["\*"],["import"],["\*"])
 importCntxtGP = context.Context("py",["\*"],["\*"],["\*"],["import"])
 ifElseContext = context.Context("py",["+case"], ["\*"], ["\*"], ["\*"]) #+ signifys more than one
-callContext = context.Context("py",["\*"],["\*"],["call"],["\*"])
-functionContext = context.Context("py",["\*"],["\*"],["functiondef"],["\*"])
+callContext = context.Context("common",["\*"],["\*"],["call"],["\*"])
+functionContext = context.Context("common",["\*"],["\*"],["functiondef"],["\*"])
 noChildrenContext = context.Context("py",None,["\*"], ["if"], ["\*"])
 whileNoChildrenContext = context.Context("py",None,["\*"], ["while"], ["\*"])
 forNoChildrenContext = context.Context("py",None,["\*"], ["for"], ["\*"])

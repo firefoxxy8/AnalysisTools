@@ -413,7 +413,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 					output += "\n<name: " + CM->getNameInfo().getAsString()
 						+ "," + nextLevel + ">";
 				}
-			}else{
+			}else if(isInCurFile(Context, D, filename)){
 				output += "\n<" + node + ",";
 				output += level + ">";
 			}
@@ -640,7 +640,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 					Decl* CD = ce->getConstructor();
 
 					string filename;
-					if(isInCurFile(Context, CD, filename)){
+					//if(isInCurFile(Context, CD, filename)){
 						CXXMethodDecl* MD =  ce->getConstructor();
 						output += "<Call ";
 						/*
@@ -654,7 +654,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 							printCallStack();								
 						}*/
 
-					}
+					//}
 
 				}else if(node == "BinaryOperator"){
 					BinaryOperator* binaryOp = (BinaryOperator*) x;
@@ -731,7 +731,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 						output += "<" + node;
 					}
 
-				}else{
+				}else if(isInCurFile(Context, x, filename)){
 
 					string node = x->getStmtClassName();
 					output += "\n<" + node + ",";
