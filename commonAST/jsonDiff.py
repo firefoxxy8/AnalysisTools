@@ -150,12 +150,14 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 			if printAdlStr: print(node["tags"], "is an additional strucutre")
 
 		else:
+			#print("getting potential matches for",node["tags"], "index:", index1)
 			potentialMatches = utils.getAllPotentialMatches(node, t2Nodes, lang, index1)
 			bestMatch = utils.getBestMatch(potentialMatches) 
+			#print("")
 			if not node["matched"] and not bestMatch == None:
 				utils.matchNodes(node, bestMatch.node, bestMatch.confidence)
 
-		index1 += 1
+			if not utils.additionalDetail(node,lang): index1 += 1
 
 	'''
 	Step (3) - Recurse on all children

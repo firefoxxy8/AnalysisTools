@@ -42,7 +42,7 @@ def tagsMatch(node1, node2, parent1, parent2, lang, rec, index1=0, index2=0):
 	tags2 = node2["tags"]
 	
 	#deny = findDenyTags(tags1) + findDenyTags(tags2)
-	mult = findMultTags(tags1) + findMultTags(tags2)
+	#mult = findMultTags(tags1) + findMultTags(tags2)
 
 	multCount1 = 0 
 	multCount2 = 0
@@ -51,18 +51,18 @@ def tagsMatch(node1, node2, parent1, parent2, lang, rec, index1=0, index2=0):
 	for tag in tags1:
 		if tag == "\*": return 1
 		#if tag in deny: return -1
-		if tag in mult: multCount1 += 1
+		#if tag in mult: multCount1 += 1
 		for tag_ in tags2:
 			if tag_ == "\*": return 1
 			#if tag_ in deny: return -1
-			if tag_ in mult: mult2Count += 1
-			if tag.lower() == tag_.lower() and len(mult) == 0:
-				return 1
-
+			#if tag_ in mult: mult2Count += 1
+			if tag.lower() == tag_.lower(): #and len(mult) == 0:
+				return calculateConfidence(node1, node2, 1, lang, index1, index2)
+ 
 		#if len(deny) > 0: return 1
 
-	if len(mult) > 0 and multCount1 > 1 or multCount2 > 1: return 1
-	elif len(mult) > 0: return -1
+	#if len(mult) > 0 and multCount1 > 1 or multCount2 > 1: return 1
+	#elif len(mult) > 0: return -1
 
 
 	if rec: 
@@ -102,26 +102,38 @@ def getAllPotentialMatches(node, t2Nodes,lang, index1, rec=True):
 	potentialMatches = []
 	unmatchedNodes = []
 
+	index2 = 0
 	for node2 in t2Nodes:
 		if not node2["matched"]:
-			unmatchedNodes.append(node2)
+			unmatchedNodes.append([node2, index2])
 
+		if additionalStructure(node2, lang):
+			if not "children" in node2: continue
+			editChildren(node2)
+			unmatchedChildren = (child for child in node2["children"] if not child["matched"])
+			for unmatchedChild in unmatchedChildren:
+				unmatchedNodes.append([unmatchedChild, index2]);
+
+		if not additionalDetail(node2, lang):
+			index2 += 1
+
+
+	'''
 	adlStrNodes = (node2 for node2 in t2Nodes if additionalStructure(node2,lang))
 	for adlStrNode in adlStrNodes:
 		#print("adding children of", adlStrNode["tags"])
 		if not "children" in adlStrNode: continue
 		editChildren(adlStrNode)
 		unmatchedChildren = (child for child in adlStrNode["children"] if not child["matched"])
-		unmatchedNodes += unmatchedChildren 
+		for unmatchedChild in unmatchedChildren:
+			unmatchedNodes.append([unmatchedChild, index
+	'''
 
-	index2 = 0
 	for node2 in unmatchedNodes:
-		confidence = confidenceOfMatch(node, node2, node["parent"], node2["parent"], lang, rec, index1, index2) 
-		if not confidence == -1:
-			potentialMatches.append(match.Match(node2, confidence))
-
-		index2 += 1
-		
+		confidence = confidenceOfMatch(node, node2[0], node["parent"], node2[0]["parent"], lang, rec, index1, node2[1]) 
+		#if not confidence == -1:
+		potentialMatches.append(match.Match(node2[0], confidence, node2[1]))
+				
 	return potentialMatches
 
 
@@ -157,12 +169,11 @@ def editChildren(node):
 
 def getBestMatch(potentialMatches):
 	#print("potentialMatches:")
-	#for match in potentialMatches:
-	#	print(match[0]["tags"])
 
 	bestConfValue = -1
 	bestMatch = None
 	for match in potentialMatches:
+		#print(match.index, match.node["tags"], match.confidence)
 		if match.confidence > bestConfValue:
 			bestMatch = match
 			bestConfValue = match.confidence
@@ -177,10 +188,12 @@ def calculateConfidence(node1, node2, level, lang, index1, index2):
 		editChildren(node1)
 		editChildren(node2)
 
+		'''	
 		for child in node1["children"]:
 			child["parent"] = node1
 			if len(getAllPotentialMatches(child, node2["children"], lang, index1, False)) >= 1:
 				numMatch += 1
+		'''
 
 		numUnmatchable = 0
 		unmatchable = (_child for _child in node2["children"] if additionalStructure(_child,lang) or additionalDetail(_child, lang))
@@ -202,14 +215,34 @@ def calculateConfidence(node1, node2, level, lang, index1, index2):
 
 
 		#part2 = matches in the children
-		part2 = (numMatch / totalChildren)  / 3
+		#part2 = .33
+		#part2 = (numMatch / totalChildren)  / 3
 
 		#part3 = differences in indicies
 		part3 = (1 - abs(index1 - index2)) / 3
 
-		return  part1 + part2 + part3
+		#return  part1 + part2 + part3
+		return  part1 + part3
 
-	return 1
+
+	if not "children" in node1 and not "children" in node2: return 1
+	elif "children" in node1 and not "children" in node2:
+		#see how many are unmatchable
+		numUnmatchable1 = 0
+		unmatchable1 = (_child for _child in node1["children"] if additionalStructure(_child,lang) or additionalDetail(_child, lang))
+		for unmatch in unmatchable1:
+			numUnmatchable1 += 1
+		if (len(node1["children"]) - numUnmatchable1) == 0: return 1
+		else: return 0
+
+	elif "children"  in node2 and not "children" in node1:
+		numUnmatchable1 = 0
+		unmatchable1 = (_child for _child in node2["children"] if additionalStructure(_child,lang) or additionalDetail(_child, lang))
+		for unmatch in unmatchable1:
+			numUnmatchable1 += 1
+		if (len(node2["children"]) - numUnmatchable1) == 0: return 1
+		else: return 0
+
 
 '''
 Checks if two tags are equal using the equality map

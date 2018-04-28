@@ -51,7 +51,9 @@ listNoCntxt = eqTag.EqTag(["list"], emptyCntxt)
 setNoCntxt = eqTag.EqTag(["set"], emptyCntxt) 
 dictNoCntxt = eqTag.EqTag(["dict"], emptyCntxt) 
 tupleNoCntxt = eqTag.EqTag(["tuple"], emptyCntxt) 
+listNoCntxtCpp = eqTag.EqTag(["initlistexpr"], emptyCntxtCpp) 
 subscriptNoCntxt = eqTag.EqTag(["subscript"], emptyCntxt)
+subscriptNoCntxtCpp = eqTag.EqTag(["subscript"], emptyCntxtCpp)
 basesCntxt = eqTag.EqTag(["variable"], context.Context("py", ["\*"],["\*"],["argument"],["parameters"]))
 paramClassContext = eqTag.EqTag(["parameters"], context.Context("py", ["\*"],["\*"],["class"],["\*"]))
 dottedNameImportCntxt = eqTag.EqTag(["dottedname"], context.Context("py", ["\*"],["\*"],["import"],["\*"]))
@@ -61,6 +63,7 @@ bodyForCntxt = eqTag.EqTag(["body"], context.Context("py",["\*"],["\*"],["for"],
 bodyWhileCntxt = eqTag.EqTag(["body"], context.Context("py",["\*"],["\*"],["while"], ["\*"]))
 bodyFuncCntxt = eqTag.EqTag(["body"], context.Context("py",["\*"],["\*"],["function"],["\*"]))
 elseIfCntxt = eqTag.EqTag(["else"], context.Context("py",["\*"],["\*"],["if"],["\*"]))
+elseIfCntxtCpp = eqTag.EqTag(["elsestatement"], context.Context("cpp",["\*"],["\*"],["ifblock"],["\*"]))
 lteBinOpCntxt = eqTag.EqTag(["binary", "operator"], context.Context("py",["lte"],["\*"], ["\*"],["\*"]))
 ltBinOpCntxt = eqTag.EqTag(["binary", "operator"], context.Context("py",["lessthan"],["\*"], ["\*"],["\*"]))
 gtBinOpCntxt = eqTag.EqTag(["binary", "operator"], context.Context("py",["gt"],["\*"], ["\*"],["\*"]))
@@ -76,7 +79,7 @@ doWhileCppCntxt = eqTag.EqTag(["do"], context.Context("cpp",["\*"],["\*"],["\*"]
 
 tagEqlMap = dict({"classdef": [classNoCntxt], #classdef matches to class in any context
 			"functiondef": [functionNoCntxt, functionNoCntxtCpp], 
-			"compoundstmt": [bodyIfCntxt, bodyForCntxt, bodyWhileCntxt, bodyFuncCntxt, elseIfCntxt],
+			"compoundstmt": [bodyIfCntxt, bodyForCntxt, bodyWhileCntxt, bodyFuncCntxt, elseIfCntxt, elseIfCntxtCpp],
 			"augassign": [augAssignNoCntxt],
 			"binop": [binOpNoCntxt, binOpNoCntxtCpp],
 			"unaryop": [unOpNoCntxt, unOpNoCntxtCpp],
@@ -87,10 +90,11 @@ tagEqlMap = dict({"classdef": [classNoCntxt], #classdef matches to class in any 
 			"assign": [assignCppCntxt],
 			"identifier": [dottedNameImportCntxt, dottedNameGpImportCntxt, basesCntxt],
 			"bases": [paramClassContext],
-			"container": [listNoCntxt, setNoCntxt, dictNoCntxt, tupleNoCntxt],
+			"container": [listNoCntxt, setNoCntxt, dictNoCntxt, tupleNoCntxt, listNoCntxtCpp],
 			"if": [caseNoCntxt, ifCppCntxt],
 			"ifblock": [ifNoCntxt, ifCppCntxt],
-			"expr": [subscriptNoCntxt]})
+			"expr": [subscriptNoCntxt, subscriptNoCntxtCpp]})
+
 
 '''
 The adlDetailMap is a dictionary of nodes in the full AST that are not relevant to our use cases 
@@ -139,6 +143,7 @@ adlDetailMap = dict({"literal": [emptyCntxt],
 			"parmvar": [emptyCntxtCpp],
 			"string": [assignContext, binOpContext],
 			"field": [emptyCntxtCpp],
+			"memberexpr": [emptyCntxtCpp],
 			"greaterthan": [binOpContext],
 			"accessspec": [emptyCntxtCpp],
 			"usingdirective": [emptyCntxtCpp],
@@ -206,7 +211,10 @@ adlStructMap = dict({"body":[classContext],
 			"access": [emptyCntxt],
 			"else": [noChildrenContext, whileNoChildrenContext, forNoChildrenContext],
 			"argument":[callContext, paramCntxt],
+			"materializetemporaryexpr":[emptyCntxtCpp],
+			"exprwithcleanups":[emptyCntxtCpp],
 			"paren":[emptyCntxt],
+			"parenexpr":[emptyCntxtCpp],
 			"import":[importCntxt],
 			"importitem":[importCntxt, importCntxtGP],
 			"importeverything":[importCntxt],

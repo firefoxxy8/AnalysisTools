@@ -24,11 +24,11 @@ class Parser{
 				return parseFunction(t);
 			}else if(t->value == "variableDecl"){
 				return parseVariableDecl();
-			}/*else if(t->value == "ifBlock"){
+			}else if(t->value == "ifBlock"){
 				return parseIfBlock(t->level);
 			}else if(t->value == "ifStatement"){
 				return parseIf(t->level);
-			}*/else{
+			}else{
 				return parseASTNode(t);	
 			}
 		}
@@ -51,7 +51,7 @@ class Parser{
 		IfBlock* parseIfBlock(int level){
 			IfBlock* ib = new IfBlock();
 			ib->type = "IfBlock";
-			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "END" && (getLookaheadToken()->value == "ifStatement" || getLookaheadToken()->value == "compoundStmt")){
+			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "END" && (getLookaheadToken()->value == "ifStatement" || getLookaheadToken()->value == "elseStatement")){
 				ib->children.push_back(parseNode());
 			}
 
@@ -61,7 +61,7 @@ class Parser{
 		If* parseIf(int level){
 			If* i = new If();
 			i->type = "If";
-			while(getLookaheadToken()->level >= level && getLookaheadToken()->value != "END"){
+			while(getLookaheadToken()->level >= level && getLookaheadToken()->value != "END" && getLookaheadToken()->value != "ifStatement" && getLookaheadToken()->value != "elseStatement"){
 				i->children.push_back(parseNode());
 			}
 
@@ -95,7 +95,7 @@ class Parser{
 
 		ASTNode* parseASTNode(Token* t){
 			ASTNode* node = new ASTNode();
-			if(t->value.find("name") != string::npos){ 
+			if(t->value.find("name") != string::npos || t->value.find("base:") != string::npos){ 
 				node->type = "Identifier";	
 			}else{
 				node->type = t->value;
