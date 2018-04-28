@@ -181,16 +181,23 @@ def calculateConfidence(node1, node2, level, lang, index1, index2):
 			child["parent"] = node1
 			if len(getAllPotentialMatches(child, node2["children"], lang, index1, False)) >= 1:
 				numMatch += 1
+
 		numUnmatchable = 0
 		unmatchable = (_child for _child in node2["children"] if additionalStructure(_child,lang) or additionalDetail(_child, lang))
 		for unmatch in unmatchable:
 			numUnmatchable += 1
 
-		totalChildren = (len(node2["children"]) - numUnmatchable)+ len(node1["children"])
+		numUnmatchable1 = 0
+		unmatchable1 = (_child for _child in node1["children"] if additionalStructure(_child,lang) or additionalDetail(_child, lang))
+		for unmatch in unmatchable1:
+			numUnmatchable1 += 1
+
+
+		totalChildren = (len(node2["children"]) - numUnmatchable)+ (len(node1["children"]) - numUnmatchable1)
 		if totalChildren == 0: return 1
 
 		#part1 = number of children
-		if (len(node2["children"]) - numUnmatchable) - len(node1["children"]) == 0: part1 = .33
+		if (len(node2["children"]) - numUnmatchable) - (len(node1["children"]) - numUnmatchable1) == 0: part1 = .33
 		else: part1 = 0
 
 

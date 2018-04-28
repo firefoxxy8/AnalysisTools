@@ -124,6 +124,7 @@ Our use cases are as follows:
 If you modify the use cases, adjust the adlDetailMap to match your use cases.
 '''
 
+noChildrenCntxtCpp = context.Context("cpp",None,["\*"],["\*"],["\*"])
 assignContext =  context.Context("py",["\*"],["\*"],["assign"],["\*"])
 functionContext =  context.Context("py",["\*"],["\*"],["function"],["\*"])
 paramContext =  context.Context("py",["\*"],["\*"],["parameters"],["\*"])
@@ -133,9 +134,16 @@ forContext =  context.Context("py",["\*"],["\*"],["for"],["\*"])
 binOpContext = context.Context("py",["\*"], ["\*"],["binary", "operator"], ["\*"])
 unOpContext = context.Context("py",["\*"], ["\*"],["unary", "operator"], ["\*"])
 adlDetailMap = dict({"literal": [emptyCntxt],
+			"cxxboolliteralexpr":[emptyCntxtCpp],
+			"continuestmt":[emptyCntxtCpp],
 			"parmvar": [emptyCntxtCpp],
 			"string": [assignContext, binOpContext],
+			"field": [emptyCntxtCpp],
 			"greaterthan": [binOpContext],
+			"accessspec": [emptyCntxtCpp],
+			"usingdirective": [emptyCntxtCpp],
+			"declstmt":[noChildrenCntxtCpp],
+			"declrefexpr":[noChildrenCntxtCpp],
 			"gt": [binOpContext],
 			"gte": [binOpContext],
 			"lessthan": [binOpContext],
@@ -202,4 +210,5 @@ adlStructMap = dict({"body":[classContext],
 			"import":[importCntxt],
 			"importitem":[importCntxt, importCntxtGP],
 			"importeverything":[importCntxt],
+			"implicitcastexpr":[emptyCntxtCpp],
 			"identifier":[functionContext, classContext]})

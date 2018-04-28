@@ -95,7 +95,12 @@ class Parser{
 
 		ASTNode* parseASTNode(Token* t){
 			ASTNode* node = new ASTNode();
-			node->type = t->value;
+			if(t->value.find("name") != string::npos){ 
+				node->type = "Identifier";	
+			}else{
+				node->type = t->value;
+			}
+
 			while(getLookaheadToken()->level > t->level && getLookaheadToken()->value != "END"){
 				node->children.push_back(parseNode());
 			}
