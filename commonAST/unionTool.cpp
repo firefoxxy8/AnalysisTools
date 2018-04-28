@@ -560,13 +560,11 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 
 
 					//find if else
-					/*
 					const IfStmt* ifstmt = (IfStmt*) parent;
 					const Stmt* elseStmt = ifstmt->getElse();
 					if(x == elseStmt){
 						isElse = true;
 					}
-					*/
 				}
 
 				
@@ -643,7 +641,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 					string filename;
 					//if(isInCurFile(Context, CD, filename)){
 						CXXMethodDecl* MD =  ce->getConstructor();
-						output += "<Call ";
+						output += "<Call";
 						/*
 						output += MD->getNameInfo().getAsString();
 						output += "," + level + ">\n";
@@ -701,7 +699,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 					if(isInCurFile(Context, CD, filename)){
 						CXXMethodDecl* MD =  ce->getConstructor();
 
-						output += "<Call ";
+						output += "<Call";
 						/*
 
 						output += "<calling func: ";
