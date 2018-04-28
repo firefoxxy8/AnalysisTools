@@ -46,6 +46,13 @@ class Parser{
 			//throwaway </variableDecl> token
 			getToken();
 
+
+			//for array declarations
+			if(getLookaheadToken()->value == "IntegerLiteral"){
+				vd->children.push_back(parseNode());
+			}
+
+			
 			return vd;
 		}
 
