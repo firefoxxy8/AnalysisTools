@@ -531,12 +531,12 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 					numClosingVarsNeeded--;
 					previousRhsDecl = false;
 				}
-				/*
 
 				if(parent != NULL && strcmp(parent->getStmtClassName(), "IfStmt") == 0){
 					if(debugPrint){
 						cerr << "possibly an if statement" << endl;
 					}
+					/*
 					//find the first child of the if statemt
 					const Stmt* firstChild = NULL;
 					auto children = parent->children();
@@ -556,17 +556,18 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 					}else if(prevCondition){
 						output +="</cond,1>\n";
 						prevCondition = false;
-					}
+					}*/
 
 
 					//find if else
+					/*
 					const IfStmt* ifstmt = (IfStmt*) parent;
 					const Stmt* elseStmt = ifstmt->getElse();
 					if(x == elseStmt){
 						isElse = true;
 					}
-
-				}*/
+					*/
+				}
 
 				
 				string node = x->getStmtClassName();
@@ -920,7 +921,6 @@ It can be a grandparent, great grand parent etc
 			if(decl == NULL){
 				const Stmt* stmt = getStmtParent(D, Context); 
 				level = getLevelStmt(stmt, level);
-
 			}
 
 			//recurse
@@ -939,19 +939,16 @@ It can be a grandparent, great grand parent etc
 
 			const Stmt* parent = getStmtParent(S, Context);
 			const Stmt* gp = getStmtParent(parent, Context);
-			//if(gp != NULL && parent != NULL && parent->getStmtClassName() == "IfStmt" && S->getStmtClassName() == "CompoundStmt"){ cout << gp->getStmtClassName() << endl;}
-
 
 			if(parent != NULL && S->getStmtClassName() == "IfStmt" && parent->getStmtClassName() == "IfStmt"){
 				level += 1; 
-			}else if(S->getStmtClassName() == "CompoundStmt" && gp != NULL && gp->getStmtClassName() == "IfStmt" 
-					&& parent != NULL && parent->getStmtClassName() == "IfStmt"){
-				level = level;
+			}else if(parent != NULL && parent->getStmtClassName() == "IfStmt" && ((IfStmt*) parent)->getElse() == S && gp != NULL && gp->getStmtClassName() != "IfStmt"){
+				level += 1; 
+			}else if(parent != NULL && parent->getStmtClassName() == "IfStmt" && ((IfStmt*) parent)->getElse() == S && gp != NULL && gp->getStmtClassName() == "IfStmt"){
+				level -= 1; //do nothing
 			}else if(parent != NULL && parent->getStmtClassName() == "IfStmt"){
 				level += 2;
 			}
-			//FIX HERE - issues!
-
 
 			//if there are no more parents of type Stmt
 			//continue upwards on the tree nodes of type Decl
