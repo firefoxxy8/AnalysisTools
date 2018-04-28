@@ -28,6 +28,8 @@ class Parser{
 				return parseIfBlock(t->level);
 			}else if(t->value == "ifStatement"){
 				return parseIf(t->level);
+			}else if(t->value == "assignment" || t->value == "augAssign"){
+				return parseAssignment(t);
 			}else{
 				return parseASTNode(t);	
 			}
@@ -47,11 +49,25 @@ class Parser{
 			return vd;
 		}
 
+		
+		Assignment* parseAssignment(Token* t){
+			Assignment* a = new Assignment();
+			a->type = t->value;
+
+			while(getLookaheadToken()->value != "compoundStmt" && getLookaheadToken()->value != "ifStatement" &&
+				getLookaheadToken()->value != "ifBlock" && getLookaheadToken()->level > t->level){
+				a->children.push_back(parseNode());
+			}
+
+			return a;
+		}
+
 
 		IfBlock* parseIfBlock(int level){
 			IfBlock* ib = new IfBlock();
 			ib->type = "IfBlock";
-			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "END" && (getLookaheadToken()->value == "ifStatement" || getLookaheadToken()->value == "elseStatement")){
+			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "END" && 
+					(getLookaheadToken()->value == "ifStatement" || getLookaheadToken()->value == "elseStatement")){
 				ib->children.push_back(parseNode());
 			}
 
@@ -61,7 +77,8 @@ class Parser{
 		If* parseIf(int level){
 			If* i = new If();
 			i->type = "If";
-			while(getLookaheadToken()->level >= level && getLookaheadToken()->value != "END" && getLookaheadToken()->value != "ifStatement" && getLookaheadToken()->value != "elseStatement"){
+			while(getLookaheadToken()->level >= level && getLookaheadToken()->value != "END" 
+				&& getLookaheadToken()->value != "ifStatement" && getLookaheadToken()->value != "elseStatement"){
 				i->children.push_back(parseNode());
 			}
 

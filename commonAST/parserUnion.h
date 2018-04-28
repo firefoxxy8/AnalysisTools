@@ -92,4 +92,12 @@ class Function : public ASTNode{
 
 };
 
+class Assignment : public ASTNode{
+	public:
+		string getType(){
+			return "Assignment";
+		}
+
+};
+
 #endif
