@@ -461,7 +461,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 				const Stmt* parent = getStmtParent(x, Context);
 				//PROBLEM
 				if(x->getStmtClassName() != "ForStmt" && isFlowControl(x, Context)){
-					return;
+					//return;
 				}
 
 				//if the parent is calling any type of funciton then this node should be enclosed in <args> </args>
@@ -515,7 +515,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 
 				}
 
-				/*
+				
 				//if the parent is a variable declaration then this node should be encolsed in <decl> </decl>
 				if(isParentStmt(x, "Var")){
 					previousRhsDecl = true;
@@ -523,7 +523,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 						cout << "setting prev var to true" << endl;
 					}
 
-				}else*/ if(previousRhsDecl && numClosingVarsNeeded > 0){
+				}else if(previousRhsDecl && numClosingVarsNeeded > 0){
 					//if the current node is not a child of a variable declaration 
 					//but the previous node was a child of a variable declation 
 					//then we know to print a </decl>
