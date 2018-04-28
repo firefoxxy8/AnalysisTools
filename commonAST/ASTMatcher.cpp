@@ -577,7 +577,13 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 
 				}
 
+
 				string node = x->getStmtClassName();
+				if(debugPrint){ 
+					cout << "printing the class name " << node;
+					cout << " here" << endl;
+				}
+
 				if(node == "ReturnStmt"){
 					output += "<return";
 				}else if(node == "ForStmt"){
@@ -623,7 +629,12 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 				}else if(node == "CallExpr"){
 					CallExpr* expr = (CallExpr*) x;
 					output += "<calling func: ";
-					output += expr->getDirectCallee()->getNameInfo().getAsString();
+
+					if(expr->getDirectCallee() == 0){
+						output += expr->getCallee()->getStmtClassName();
+					}else{
+						output += expr->getDirectCallee()->getNameInfo().getAsString();
+					}
 					output += ", " + level + ">\n";
 					output += "<args";
 					numClosingArgsNeeded++;
@@ -682,6 +693,8 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 					output += "<try";
 				}else if(node == "CXXCatchStmt"){
 					output += "<except";
+				}else if(node == "InitListExpr"){
+					output += "<container";
 				}else if(node == "CXXOperatorCallExpr"){
 					CXXOperatorCallExpr* ce = (CXXOperatorCallExpr*) x;
 					if(ce->isAssignmentOp()){
