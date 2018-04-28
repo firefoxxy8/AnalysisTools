@@ -28,7 +28,7 @@ class ASTNode{
 		list<ASTNode*> getChildren(){
 			return children;
 		}
-		
+
 		void printNode(int level){
 			cout << getIndentation(level);
 			cout << "-----------------" << endl;
@@ -57,10 +57,9 @@ class ASTNode{
 		list<ASTNode*> children;
 };
 
-
 class IfBlock: public ASTNode{
 	public: 
-	
+
 		string getType(){
 			return "IfBlock";
 		}
@@ -76,10 +75,17 @@ class If: public ASTNode{
 };
 
 
+class VariableDecl: public ASTNode{
+	public:
+		string getType(){
+			return "VariableDecl";	
+		}
+};
+
 
 class Function : public ASTNode{
 	public:
-		
+
 		string getType(){
 			return "Function";
 		}

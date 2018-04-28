@@ -353,14 +353,14 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 					output +="\n</variableDecl,1>\n";
 					numClosingVarsNeeded--;
 				}
-			}/*else if(node == "Function"){
+			}else if(node == "Function"){
 				FunctionDecl* FD = (FunctionDecl*) D; 
 				output += "<functionDef," + level +">";
 				//add function name to the output
 				output += "\n<name: " + FD->getNameInfo().getAsString()
 					+ "," + nextLevel + ">";
 
-			}*/else if(node == "CXXRecord"){
+			}else if(node == "CXXRecord"){
 				const Decl* parent = getDeclParent(D, Context);
 				if(parent && strcmp(parent->getDeclKindName(), "CXXRecord") != 0){
 					CXXRecordDecl* CD = (CXXRecordDecl*) D;
@@ -523,7 +523,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 						cout << "setting prev var to true" << endl;
 					}
 
-				}else if(previousRhsDecl && numClosingVarsNeeded > 0){
+				}else*/ if(previousRhsDecl && numClosingVarsNeeded > 0){
 					//if the current node is not a child of a variable declaration 
 					//but the previous node was a child of a variable declation 
 					//then we know to print a </decl>
@@ -531,7 +531,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 					numClosingVarsNeeded--;
 					previousRhsDecl = false;
 				}
-
+				/*
 
 				if(parent != NULL && strcmp(parent->getStmtClassName(), "IfStmt") == 0){
 					if(debugPrint){

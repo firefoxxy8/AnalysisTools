@@ -20,8 +20,10 @@ class Parser{
 			Token* t = getToken();
 			if(t->value == "END"){
 				return NULL;	
-			}else if(t->value == "Function"){
+			}else if(t->value == "functionDef"){
 				return parseFunction(t);
+			}else if(t->value == "variableDecl"){
+				return parseVariableDecl();
 			}/*else if(t->value == "ifBlock"){
 				return parseIfBlock(t->level);
 			}else if(t->value == "ifStatement"){
@@ -30,6 +32,21 @@ class Parser{
 				return parseASTNode(t);	
 			}
 		}
+
+		VariableDecl* parseVariableDecl(){
+			VariableDecl* vd = new VariableDecl();
+			vd->type = "VariableDecl";
+
+			while(getLookaheadToken()->value != "/variableDecl" && getLookaheadToken()->value != "END"){
+				vd->children.push_back(parseNode());
+			}
+
+			//throwaway </variableDecl> token
+			getToken();
+
+			return vd;
+		}
+
 
 		IfBlock* parseIfBlock(int level){
 			IfBlock* ib = new IfBlock();
@@ -55,6 +72,8 @@ class Parser{
 		Function* parseFunction(Token* t){
 			Function* func = new Function();	
 			func->type = "Function";
+			getToken(); //name of the function 
+
 			while(getLookaheadToken()->level < t->level && getLookaheadToken()->value != "END"){
 				func->children.push_back(parseParameter());
 			}
