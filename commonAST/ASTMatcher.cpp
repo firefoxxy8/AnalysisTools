@@ -203,8 +203,6 @@ bool isFlowControl(const Stmt* S, ASTContext *Context){
 		return true;
 	}
 
-
-
 	if(strcmp(S->getStmtClassName(), "CompoundStmt") == 0){
 		return false;
 	}
@@ -463,10 +461,10 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 
 				const Stmt* parent = getStmtParent(x, Context);
 				//PROBLEM
-				if(x->getStmtClassName() != "ForStmt" && isFlowControl(x, Context)){
+				if(x->getStmtClassName() != "ForStmt" && isFlowControl(x, Context)) {
 					//return;
 				}
-
+			
 				//if the parent is calling any type of funciton then this node should be enclosed in <args> </args>
 				string filename;
 				if(callStackDebug && !callStack.empty()){
@@ -723,6 +721,8 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 
 					}
 
+				}else if(node == "ArraySubscriptExpr"){
+					output += "<expr";	
 				}else if(node == "DeclRefExpr"){
 					if(parent != NULL && parent->getStmtClassName() == "ImplicitCastExpr"){
 						DeclRefExpr* dr = (DeclRefExpr*) x;
