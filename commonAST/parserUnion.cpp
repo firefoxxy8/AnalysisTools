@@ -49,7 +49,10 @@ class Parser{
 
 			//for array declarations
 			if(getLookaheadToken()->value == "IntegerLiteral"){
-				vd->children.push_back(parseNode());
+				getToken();
+				ASTNode* il = new ASTNode();
+				il->type = "IntegerLiteral";	
+				vd->children.push_back(il);
 			}
 
 			
