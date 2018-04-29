@@ -158,9 +158,9 @@ class Parser{
 				fd->compoundStmt = parseCompoundStmt();
 			}//else its a prototype or there is an init list
 			else{
-				if(getLookaheadToken()->level > level && getLookaheadToken()->value != "compoundStmt"){
+				if(getLookaheadToken()->level > level && getLookaheadToken()->value != "compoundStmt" && isExpr(getLookaheadToken()->value)){
 					if(printDebug){
-						cerr << "parsing init list" << endl;
+						cerr << "parsing init list of func:" << fd->name->name << endl;
 					}
 
 					fd->initList = parseBody(level);					
@@ -179,6 +179,7 @@ class Parser{
 		}
 
 		Bases* parseBases(){
+			if(printDebug) { cout << "parsing bases" << endl; }
 			Bases* b = new Bases();
 			Token* t = getToken();
 			if(t->value != "bases"){
@@ -186,9 +187,13 @@ class Parser{
 				exit(1);
 			}
 
-			while(getLookaheadToken()->level > t->level){
+			while(getLookaheadToken()->value != "/bases"){
+				if(printDebug) { cout << getLookaheadToken()->value << endl; }
 				b->data.push_back(parseIdentifier());	
 			}
+
+			//throw away /bases
+			getToken();
 
 			return b;
 		}
@@ -203,6 +208,7 @@ class Parser{
 		}
 
 		Identifier* parseIdentifier(){
+			if(printDebug) { cout << "parsing identifier" << endl; }
 			Identifier* i = new Identifier();
 			Token* t = getToken();	
 			string val = t->value;
@@ -422,7 +428,11 @@ class Parser{
 
 		DoWhile* parseDoWhile(int level){
 			DoWhile* dw = new DoWhile();
-			dw->compoundStmt = parseCompoundStmt();
+			if(getLookaheadToken()->value == "compoundStmt"){
+				dw->compoundStmt = parseCompoundStmt();
+			}else{
+				dw->body = parseBody(level);
+			}
 
 			while(getLookaheadToken()->level > level){
 				dw->test.push_back(parseExpr());
@@ -435,7 +445,13 @@ class Parser{
 			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "compoundStmt"){
 				w->test.push_back(parseExpr());
 			}
-			w->compoundStmt = parseCompoundStmt();
+
+			if(getLookaheadToken()->value == "compoundStmt"){
+				w->compoundStmt = parseCompoundStmt();
+			}else{
+				w->body = parseBody(level);	
+			}
+
 			return w;
 		}
 
@@ -550,18 +566,41 @@ class Parser{
 
 
 		BinOp* parseBinOp(int level){
+
 			BinOp* bo = new BinOp();
+			
+			if(printDebug) { cout << "parsing bin op left" << endl; }
+
 			if(getLookaheadToken()->level > level /*&& getLookaheadToken()->value != "END"*/){
-				bo->left = parseExpr();
+				if(isExpr(getLookaheadToken()->value)){
+					bo->left = parseExpr();
+				}else if(getLookaheadToken()->value == "assignment"){
+					bo->left = parseAssign(level);
+				}else{
+					cout << "parseBinOp -> PARSE ERROR: did not expect token: " << getLookaheadToken()->value << endl;
+				}
 			}else{
 				bo->left = NULL;
 			}
 
+
+			if(printDebug) { cout << "parsing bin op right" << endl; }
+
 			if(getLookaheadToken()->level > level /*&& getLookaheadToken()->value != "END"*/){
-				bo->right = parseExpr();
+				if(isExpr(getLookaheadToken()->value)){
+					bo->right = parseExpr();
+				}else if(getLookaheadToken()->value == "assignment"){
+					bo->right = parseAssign(level);
+				}else{
+					cout << "parseBinOp -> PARSE ERROR: did not expect token: " << getLookaheadToken()->value << endl;
+				}
+
 			}else{
 				bo->right = NULL;
 			}
+
+
+			if(printDebug) { cout << "done parsing bin op" << endl; }
 
 			return bo;
 		}

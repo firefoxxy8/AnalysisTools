@@ -400,7 +400,19 @@ class While: public Stmt{
 				}
 			}
 
-			children.push_back((ASTNode*)compoundStmt);
+			if(compoundStmt != NULL){
+				children.push_back((ASTNode*)compoundStmt);
+			}else{
+				list<ASTNode*>::iterator itr;
+				for(itr=body.begin(); itr != body.end(); itr++){
+					if(*itr){
+						children.push_back(*itr);	
+					}	
+
+				}
+
+			}
+
 			return children;
 		}
 
@@ -423,6 +435,7 @@ class While: public Stmt{
 
 		list<Expr*> test;
 		CompoundStmt* compoundStmt;
+		list<ASTNode*> body;
 };
 
 class DoWhile: public Stmt{
@@ -440,7 +453,19 @@ class DoWhile: public Stmt{
 				}
 			}
 
-			children.push_back((ASTNode*)compoundStmt);
+			if(compoundStmt != NULL){
+				children.push_back((ASTNode*)compoundStmt);
+			}else{
+				list<ASTNode*>::iterator itr;
+				for(itr=body.begin(); itr != body.end(); itr++){
+					if(*itr){
+						children.push_back(*itr);	
+					}	
+
+				}
+
+			}
+
 			return children;
 		}
 
@@ -463,6 +488,7 @@ class DoWhile: public Stmt{
 
 		list<Expr*> test;
 		CompoundStmt* compoundStmt;
+		list<ASTNode*> body;
 };
 
 class IfBlock: public Stmt{
@@ -1007,8 +1033,8 @@ class BinOp: public Expr{
 
 
 
-		Expr* left;
-		Expr* right;
+		ASTNode* left;
+		ASTNode* right;
 };
 
 class UnaryOp: public Expr{

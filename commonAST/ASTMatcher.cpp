@@ -383,6 +383,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 						vBasesItr++;
 					}
 
+					output += "\n</bases," + nextLevel + ">";
 				}
 			}else if(node == "CXXDestructor"){
 				CXXDestructorDecl* CD = (CXXDestructorDecl*) D;
