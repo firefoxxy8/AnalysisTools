@@ -35,6 +35,8 @@ for root, dirs, files in os.walk(directoryPrefix, topdown=False):
 				elif _file.endswith(".h"): 
 					filenamesToAdd.insert(0,os.path.join(root, _file))
 				else: continue
+
+		if len(filenamesToAdd) == 0: continue
 		
 		
 		filenames = ""
