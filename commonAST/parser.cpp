@@ -381,7 +381,7 @@ class Parser{
 
 		Assign* parseAssign(int level){
 			Assign* assign = new Assign();
-			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "END") {
+			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "END" && isExpr(getLookaheadToken()->value)) {
 				assign->targets.push_back(parseExpr());
 			}
 			
