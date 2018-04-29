@@ -18,6 +18,7 @@ for root, dirs, files in os.walk(directoryPrefix, topdown=False):
 	print(root)
 	print(dirs)
 	print(files)
+	filenamesToAdd = []
 	if lang == "cpp":
 		_dir = root[root.rfind("/")+1:]
 		print("=================")
@@ -26,14 +27,20 @@ for root, dirs, files in os.walk(directoryPrefix, topdown=False):
 
 		for _f in files:
 			if "out" in root: continue
-			
-			filenames = ""
-			
+
 			for _file in files:
-				if _file.endswith(".cpp") or _file.endswith(".h"): 
-					filenames += os.path.join(root,_file) + " "
+				if _file.endswith(".cpp"):
+					filenamesToAdd.append(os.path.join(root, _file))
+					#filenames += os.path.join(root,_file) + " "
+				elif _file.endswith(".h"): 
+					filenamesToAdd.insert(0,os.path.join(root, _file))
+				else: continue
 		
-		print(filenames)
+		
+		filenames = ""
+		for filename in filenamesToAdd:
+			filenames += filename + " "
+		#sort so the .h files go in first
 		out = subprocess.check_output(["/usr/local/submitty/SubmittyAnalysisTools/unionToolRunner.py", "-json", filenames])
 		fw = open(directoryPrefix + "/out/" + _dir + "Union.txt", "w")
 		fw.write(out.decode('utf-8'))
