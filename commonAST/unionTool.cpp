@@ -231,6 +231,8 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 		 */
 		bool DeclHelper(Decl *D){
 
+			if(allNodes && D != NULL){ cout << D->getDeclKindName() << endl; }
+
 			const Stmt* parent = getStmtParent(D, Context);
 			const Stmt* parentsParent = getStmtParent(parent, Context);
 
@@ -442,6 +444,8 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 		   this helper function is called when the traversal reaches a node of type Stmt
 		 */
 		void StmtHelper(Stmt *x){
+			if(allNodes && x != NULL){ cout << x->getStmtClassName() << endl; }
+
 			//variable used for <cond> </cond>
 			bool condition = false;
 			bool isElse = false;
@@ -724,6 +728,8 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 							QualType qt = d->getType();
 							if(qt.getAsString() == "std::vector<int, class std::allocator<int> >::const_reference (std::vector::size_type) const noexcept"){
 								output += "<subscript";
+							}else{
+								output += "<" + node;
 							}
 						}
 					}else{
