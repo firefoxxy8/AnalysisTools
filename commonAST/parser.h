@@ -351,7 +351,9 @@ class For : public Stmt{
 
 		list<ASTNode*> getChildren(){
 			list<ASTNode*> children;
-			children.push_back((ASTNode*)compoundStmt);
+			if(compoundStmt != NULL){
+				children.push_back((ASTNode*)compoundStmt);
+			}
 
 			list<ASTNode*>::iterator itr;
 			for(itr=stopCond.begin(); itr != stopCond.end(); itr++){

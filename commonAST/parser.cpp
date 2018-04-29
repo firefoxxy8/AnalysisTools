@@ -81,7 +81,7 @@ class Parser{
 			}else if(t->value == "case"){
 				return (Stmt*) parseCase(t->level);
 			}else if(t->value == "forLoop"){
-				return (Stmt*) parseFor();
+				return (Stmt*) parseFor(t->level);
 			}else if(t->value == "whileLoop"){
 				return (Stmt*) parseWhile(t->level);
 			}else if(t->value == "do"){
@@ -400,23 +400,23 @@ class Parser{
 		}
 
 
-		For* parseFor(){
+		For* parseFor(int level){
 			For* f = new For();
-			while(getLookaheadToken()->value != "compoundStmt"){
+			while(getLookaheadToken()->value != "compoundStmt" && getLookaheadToken()->level > level && getLookaheadToken()->value != "END"){
 				if(isExpr(getLookaheadToken()->value)){
 					f->stopCond.push_back(parseExpr());	
 				}else if(isStmt(getLookaheadToken()->value)){
 					f->stopCond.push_back(parseStmt());	
-				}else if(getLookaheadToken()->value == "END"){
-					return f;
 				}else{
 					cerr << "ERROR: Attempted to add value which is not an EXPR or STMT" << endl;	
 					exit(1);
 				}
-
 			}
 
-			f->compoundStmt = parseCompoundStmt();
+			if(getLookaheadToken()->value == "compoundStmt"){
+				f->compoundStmt = parseCompoundStmt();
+			}
+
 			return f;
 		}
 
