@@ -54,6 +54,7 @@ tupleNoCntxt = eqTag.EqTag(["tuple"], emptyCntxt)
 listNoCntxtCpp = eqTag.EqTag(["initlistexpr"], emptyCntxtCpp) 
 subscriptNoCntxt = eqTag.EqTag(["subscript"], emptyCntxt)
 subscriptNoCntxtCpp = eqTag.EqTag(["subscript"], emptyCntxtCpp)
+arraySubscriptNoCntxtCpp = eqTag.EqTag(["arraysubscriptexpr"], emptyCntxtCpp)
 basesCntxt = eqTag.EqTag(["variable"], context.Context("py", ["\*"],["\*"],["argument"],["parameters"]))
 paramClassContext = eqTag.EqTag(["parameters"], context.Context("py", ["\*"],["\*"],["class"],["\*"]))
 dottedNameImportCntxt = eqTag.EqTag(["dottedname"], context.Context("py", ["\*"],["\*"],["import"],["\*"]))
@@ -93,7 +94,7 @@ tagEqlMap = dict({"classdef": [classNoCntxt], #classdef matches to class in any 
 			"container": [listNoCntxt, setNoCntxt, dictNoCntxt, tupleNoCntxt, listNoCntxtCpp],
 			"if": [caseNoCntxt, ifCppCntxt],
 			"ifblock": [ifNoCntxt, ifCppCntxt],
-			"expr": [subscriptNoCntxt, subscriptNoCntxtCpp]})
+			"expr": [subscriptNoCntxt, subscriptNoCntxtCpp, arraySubscriptNoCntxtCpp]})
 
 
 '''
