@@ -21,7 +21,7 @@ def getMatchB(matcha):
 	prefix = matcha[:index]
 	for root,dirs,fnames in os.walk(dirprefix,topdown=False): 
 		for fname in fnames:
-			if (prefix + "Intersect") in fname:
+			if (prefix + "Intersect.txt") == fname:
 				return fname 
 
 for root,dirs,fnames in os.walk(dirprefix,topdown=False): 
