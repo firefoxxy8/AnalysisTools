@@ -116,12 +116,20 @@ class Parser{
 			func->type = "Function";
 			getToken(); //name of the function 
 
-			while(getLookaheadToken()->value == "ParmVar" && getLookaheadToken()->value != "END"){
+			while(getLookaheadToken()->value == "ParmVar" || getLookaheadToken()->value == "DeclRefExpr" 
+				|| getLookaheadToken()->value == "FloatingLiteral" || getLookaheadToken()->value == "ImplicitCastExpr" && getLookaheadToken()->value != "END"){
 				func->children.push_back(parseParameter());
 			}
 
 			while(getLookaheadToken()->level > t->level && getLookaheadToken()->value != "END"){
 				func->children.push_back(parseNode());
+
+				while(getLookaheadToken()->value == "ParmVar" || getLookaheadToken()->value == "DeclRefExpr" 
+					|| getLookaheadToken()->value == "FloatingLiteral" || getLookaheadToken()->value == "ImplicitCastExpr" && getLookaheadToken()->value != "END"){
+
+					func->children.push_back(parseParameter());
+				}
+
 			}
 
 			return func;
