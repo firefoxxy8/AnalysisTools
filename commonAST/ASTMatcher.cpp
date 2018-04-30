@@ -954,7 +954,10 @@ It can be a grandparent, great grand parent etc
 			if(S->getStmtClassName() == "IfStmt" and parent != NULL 
 				and parent->getStmtClassName() != "IfStmt"){
 				level += 1;
+			}else if(parent != NULL && parent->getStmtClassName() == "IfStmt"){
+				level += 2;
 			}
+
 
 
 			//if there are no more parents of type Stmt
