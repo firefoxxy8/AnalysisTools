@@ -22,6 +22,8 @@ class Parser{
 				return NULL;	
 			}else if(t->value == "functionDef"){
 				return parseFunction(t);
+			}else if(t->value == "ParmVar" || t->value == "DeclRefExpr" || t->value == "FloatingLiteral" || t->value == "ImplicitCastExpr"){
+				return parseDeclRef(t);
 			}else if(t->value == "variableDecl"){
 				return parseVariableDecl();
 			}else if(t->value == "ifBlock"){
@@ -39,8 +41,8 @@ class Parser{
 
 
 		Module* parseModule(){
-			getToken();
 			Module* module = new Module();
+			module->type = "Module";
 			while(getLookaheadToken()->value != "END"){
 					module->children.push_back(parseNode());
 			}
@@ -114,7 +116,7 @@ class Parser{
 			func->type = "Function";
 			getToken(); //name of the function 
 
-			while(getLookaheadToken()->level < t->level && getLookaheadToken()->value != "END"){
+			while(getLookaheadToken()->value == "ParmVar" && getLookaheadToken()->value != "END"){
 				func->children.push_back(parseParameter());
 			}
 
@@ -133,6 +135,14 @@ class Parser{
 			return p;
 		}
 
+	
+		ASTNode* parseDeclRef(Token* t){
+			ASTNode* p = new ASTNode();
+			p->type = t->value;
+
+			return p;
+		}
+
 		ASTNode* parseASTNode(Token* t){
 			ASTNode* node = new ASTNode();
 			if(t->value.find("name") != string::npos || t->value.find("base:") != string::npos){ 
@@ -143,7 +153,16 @@ class Parser{
 
 			while(getLookaheadToken()->level > t->level && getLookaheadToken()->value != "END"){
 				node->children.push_back(parseNode());
+
+				Token* lt = getLookaheadToken();
+				while(lt->value == "ParmVar" || lt->value == "DeclRefExpr" || lt->value == "FloatingLiteral" || lt->value == "ImplicitCastExpr"){
+					node->children.push_back(parseParameter());
+					lt = getLookaheadToken();
+				}
+
 			}
+
+
 
 			return node;
 		}

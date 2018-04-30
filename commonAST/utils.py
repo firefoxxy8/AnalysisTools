@@ -91,23 +91,29 @@ def getAllPotentialMatches(node, t2Nodes,lang, index1, rec=True):
 
 	index2 = 0
 	for node2 in t2Nodes:
-		if not node2["matched"]:
-			unmatchedNodes.append([node2, index2])
-
 		if additionalStructure(node2, lang):
 			if not "children" in node2: continue
 			editChildren(node2)
-			unmatchedChildren = (child for child in node2["children"] if not child["matched"])
-			for unmatchedChild in unmatchedChildren:
-				unmatchedNodes.append([unmatchedChild, index2]);
+			#unmatchedChildren = (child for child in node2["children"] if not child["matched"])
+			for _child in node2["children"]:
+				if not additionalDetail(node2, lang) and not _child["matched"]:
+					unmatchedNodes.append([_child, index2]);
+				if not additionalDetail(node2, lang): index2 += 1
 
-		if not additionalDetail(node2, lang):
-			index2 += 1
+		elif not node2["matched"] and not additionalDetail(node2, lang):
+				unmatchedNodes.append([node2, index2])
+				index2 += 1
+		elif not additionalDetail(node2, lang):
+				index2 += 1
 
 
 	for node2 in unmatchedNodes:
 		confidence = confidenceOfMatch(node, node2[0], node["parent"], node2[0]["parent"], lang, rec, index1, node2[1]) 
-		potentialMatches.append(match.Match(node2[0], confidence, node2[1]))
+
+		if not confidence == -1:
+			potentialMatches.append(match.Match(node2[0], confidence, node2[1]))
+			print("adding confidence of matching:", node["tags"], ":", index1, "with", node2[0]["tags"],":", node2[1], "conf: ", confidence)
+
 		if confidence == 1:
 			return [match.Match(node2[0], confidence, node2[1])]
 				
@@ -157,7 +163,14 @@ def getBestMatch(potentialMatches):
 
 	return bestMatch
 
-
+def getNumMatchableChildren(children, lang):
+	num = 0
+	for child in children:
+		if additionalStructure(child, lang) and "children" in child:
+			num += getNumMatchableChildren(child["children"], lang)
+		elif not additionalDetail(child, lang):
+			num += 1
+	return num
 
 def calculateConfidence(node1, node2, level, lang, index1, index2):
 	numMatch = 0 
@@ -172,6 +185,7 @@ def calculateConfidence(node1, node2, level, lang, index1, index2):
 				numMatch += 1
 		'''
 
+		'''
 		numUnmatchable = 0
 		unmatchable = (_child for _child in node2["children"] if additionalStructure(_child,lang) or additionalDetail(_child, lang))
 		for unmatch in unmatchable:
@@ -181,14 +195,22 @@ def calculateConfidence(node1, node2, level, lang, index1, index2):
 		unmatchable1 = (_child for _child in node1["children"] if additionalStructure(_child,lang) or additionalDetail(_child, lang))
 		for unmatch in unmatchable1:
 			numUnmatchable1 += 1
+		'''
 
 
-		totalChildren = (len(node2["children"]) - numUnmatchable)+ (len(node1["children"]) - numUnmatchable1)
-		if totalChildren == 0: return 1
+		numChildren1 = getNumMatchableChildren(node1["children"], lang)
+		numChildren2 = getNumMatchableChildren(node2["children"], lang)
+
+		#totalChildren = (len(node2["children"]) - numUnmatchable)+ (len(node1["children"]) - numUnmatchable1)
+		totalChildren = abs(numChildren1 - numChildren2)
+		#if totalChildren == 0: return 1
 
 		#part1 = number of children
-		if (len(node2["children"]) - numUnmatchable) - (len(node1["children"]) - numUnmatchable1) == 0: part1 = .33
-		else: part1 = 0
+		if numChildren1 + numChildren2 == 0: part1 = 1
+		else: part1 = 1 - (totalChildren / (numChildren1 + numChildren2))
+
+		#if (len(node2["children"]) - numUnmatchable) - (len(node1["children"]) - numUnmatchable1) == 0: part1 = 1  #.5
+		#else: part1 = 0
 
 
 		#part2 = matches in the children
@@ -196,28 +218,20 @@ def calculateConfidence(node1, node2, level, lang, index1, index2):
 		#part2 = (numMatch / totalChildren)  / 3
 
 		#part3 = differences in indicies
-		part3 = (1 - abs(index1 - index2)) / 3
+		#part3 = (1 - abs(index1 - index2)) / 2
 
 		#return  part1 + part2 + part3
-		return  part1 + part3
+		return  part1 #+ part3
 
 
 	if not "children" in node1 and not "children" in node2: return 1
 	elif "children" in node1 and not "children" in node2:
-		#see how many are unmatchable
-		numUnmatchable1 = 0
-		unmatchable1 = (_child for _child in node1["children"] if additionalStructure(_child,lang) or additionalDetail(_child, lang))
-		for unmatch in unmatchable1:
-			numUnmatchable1 += 1
-		if (len(node1["children"]) - numUnmatchable1) == 0: return 1
+		numChildren1 = getNumMatchableChildren(node1["children"], lang)
+		if numChildren1 == 0: return 1
 		else: return 0
-
 	elif "children"  in node2 and not "children" in node1:
-		numUnmatchable1 = 0
-		unmatchable1 = (_child for _child in node2["children"] if additionalStructure(_child,lang) or additionalDetail(_child, lang))
-		for unmatch in unmatchable1:
-			numUnmatchable1 += 1
-		if (len(node2["children"]) - numUnmatchable1) == 0: return 1
+		numChildren2 = getNumMatchableChildren(node2["children"], lang)
+		if numChildren2 == 0: return 1
 		else: return 0
 
 

@@ -147,6 +147,7 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 	'''
 	index1 = 0
 	for node in t1Nodes:	
+		if utils.additionalDetail(node,lang): continue
 		if utils.additionalStructure(node,lang):
 			node["matched"] = True
 			node["match"] = None
@@ -158,10 +159,8 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 			#print("getting potential matches for",node["tags"], "index:", index1)
 			print("getting potential matches")
 			potentialMatches = utils.getAllPotentialMatches(node, t2Nodes, lang, index1)
-			print("got potential matches")
+			print("length of potential matches",len(potentialMatches))
 			bestMatch = utils.getBestMatch(potentialMatches) 
-			print("got best matches")
-			#print("")
 			if not node["matched"] and not bestMatch == None:
 				utils.matchNodes(node, bestMatch.node, bestMatch.confidence)
 				global numTotalMatches
