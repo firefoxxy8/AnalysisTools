@@ -123,7 +123,7 @@ def delAddedTags(node, first):
 '''
 def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 
-	print("checking children")
+	#print("checking children")
 
 	'''
 	Step (1) - find all additional structure nodes in tree2
@@ -139,7 +139,7 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 			if printAdlStr: print(node2["tags"], "is an additional strucutre")
 
 
-	print("found adl1 nodes")
+	#print("found adl1 nodes")
 
 	'''
 	Step (2) - Find a match in tree2 for each node in tree1
@@ -157,20 +157,20 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 
 		else:
 			#print("getting potential matches for",node["tags"], "index:", index1)
-			print("getting potential matches")
+			#print("getting potential matches")
 			potentialMatches = utils.getAllPotentialMatches(node, t2Nodes, lang, index1)
-			print("length of potential matches",len(potentialMatches))
+			#print("length of potential matches",len(potentialMatches))
 			bestMatch = utils.getBestMatch(potentialMatches) 
 			if not node["matched"] and not bestMatch == None:
 				utils.matchNodes(node, bestMatch.node, bestMatch.confidence)
 				global numTotalMatches
 				numTotalMatches += 1
-				print("num matches:", numTotalMatches)
+				#print("num matches:", numTotalMatches)
 
 			if not utils.additionalDetail(node,lang): index1 += 1
 
 
-	print("found matches - recursing")
+	#print("found matches - recursing")
 
 	'''
 	Step (3) - Recurse on all children
