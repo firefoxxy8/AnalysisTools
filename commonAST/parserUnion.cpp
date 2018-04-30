@@ -22,16 +22,20 @@ class Parser{
 				return NULL;	
 			}else if(t->value == "functionDef"){
 				return parseFunction(t);
-			}else if(t->value == "ParmVar" || t->value == "DeclRefExpr" || t->value == "FloatingLiteral" || t->value == "ImplicitCastExpr"){
+			}else if(t->value == "ParmVar" || t->value == "FloatingLiteral" || t->value == "ImplicitCastExpr"){
 				return parseDeclRef(t);
 			}else if(t->value == "variableDecl"){
 				return parseVariableDecl();
+			}else if(t->value == "unaryOp"){
+				return parseUnOp(t->level);
 			}else if(t->value == "ifBlock"){
 				return parseIfBlock(t->level);
 			}else if(t->value == "ifStatement"){
 				return parseIf(t->level);
 			}else if(t->value == "assignment" || t->value == "augAssign"){
 				return parseAssignment(t);
+			}else if(t->value == "forLoop"){
+				return parseFor(t->level);
 			}else if(t->value == "module"){
 				return parseModule();
 			}else{
@@ -39,6 +43,30 @@ class Parser{
 			}
 		}
 
+		UnaryOp* parseUnOp(int level){
+			UnaryOp* u = new UnaryOp();
+			u->type = "unaryOp";	
+			if(getLookaheadToken()->level > level){
+				u->children.push_back(parseNode());	
+			}
+
+			return u;
+		}
+
+
+		For* parseFor(int level){
+			For* f = new For();
+			f->type = "For";
+			while(getLookaheadToken()->value != "compoundStmt" && getLookaheadToken()->level > level && getLookaheadToken()->value != "END"){
+				f->children.push_back(parseNode());	
+			}
+
+			if(getLookaheadToken()->value == "compoundStmt"){
+				f->children.push_back(parseNode());
+			}
+
+			return f;
+		}
 
 		Module* parseModule(){
 			Module* module = new Module();

@@ -100,10 +100,25 @@ class Assignment : public ASTNode{
 
 };
 
+class For: public ASTNode{
+	public:
+		string getType(){
+			return "For";
+		}
+};
+
+
 class Module: public ASTNode{
 	public:
 		string getType(){
 			return "Module";
+		}
+};
+
+class UnaryOp: public ASTNode{
+	public:
+		string getType(){
+			return "UnOp";
 		}
 };
 
