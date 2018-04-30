@@ -60,22 +60,6 @@ else:
 	filename = sys.argv[4]
 
 
-
-#loop to add all filenames to filenames
-'''
-if len(sys.argv) > minNumArgs:
-	count = minNumArgs
-	#while there are still filenames to add
-	while(count < len(sys.argv)):
-		#if we need to expand, do so. Otherwise just add it
-		if "*." in sys.argv[count]:
-			expandStar(sys.argv[count], filenames)
-		else:
-			filenames.append(sys.argv[count])
-		count+=1
-'''
-
-
 if filename[len(filename)-1] == " ":
 	filename = filename[:len(filename)-1]
 

@@ -41,30 +41,17 @@ def tagsMatch(node1, node2, parent1, parent2, lang, rec, index1=0, index2=0):
 	tags1 = node1["tags"]
 	tags2 = node2["tags"]
 	
-	#deny = findDenyTags(tags1) + findDenyTags(tags2)
-	#mult = findMultTags(tags1) + findMultTags(tags2)
-
 	multCount1 = 0 
 	multCount2 = 0
 
 	#check if the tags are naively equal
 	for tag in tags1:
 		if tag == "\*": return 1
-		#if tag in deny: return -1
-		#if tag in mult: multCount1 += 1
 		for tag_ in tags2:
 			if tag_ == "\*": return 1
-			#if tag_ in deny: return -1
-			#if tag_ in mult: mult2Count += 1
 			if tag.lower() == tag_.lower(): #and len(mult) == 0:
 				return calculateConfidence(node1, node2, 1, lang, index1, index2)
  
-		#if len(deny) > 0: return 1
-
-	#if len(mult) > 0 and multCount1 > 1 or multCount2 > 1: return 1
-	#elif len(mult) > 0: return -1
-
-
 	if rec: 
 		confidence1 = equalTags(node1, node2, parent1, parent2, lang, index1, index2) 
 		if not confidence1 == -1:
@@ -118,21 +105,11 @@ def getAllPotentialMatches(node, t2Nodes,lang, index1, rec=True):
 			index2 += 1
 
 
-	'''
-	adlStrNodes = (node2 for node2 in t2Nodes if additionalStructure(node2,lang))
-	for adlStrNode in adlStrNodes:
-		#print("adding children of", adlStrNode["tags"])
-		if not "children" in adlStrNode: continue
-		editChildren(adlStrNode)
-		unmatchedChildren = (child for child in adlStrNode["children"] if not child["matched"])
-		for unmatchedChild in unmatchedChildren:
-			unmatchedNodes.append([unmatchedChild, index
-	'''
-
 	for node2 in unmatchedNodes:
 		confidence = confidenceOfMatch(node, node2[0], node["parent"], node2[0]["parent"], lang, rec, index1, node2[1]) 
-		#if not confidence == -1:
 		potentialMatches.append(match.Match(node2[0], confidence, node2[1]))
+		if confidence == 1:
+			return [match.Match(node2[0], confidence, node2[1])]
 				
 	return potentialMatches
 

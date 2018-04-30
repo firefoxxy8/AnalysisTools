@@ -16,6 +16,7 @@ adlDetail1 = 0
 adlDetail2 = 0
 unmatched1 = 0
 unmatched2 = 0
+numTotalMatches = 0
 
 '''
 Given a node, mark it and all of its children recursivley, until we reach the leaves
@@ -122,6 +123,8 @@ def delAddedTags(node, first):
 '''
 def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 
+	print("checking children")
+
 	'''
 	Step (1) - find all additional structure nodes in tree2
 	'''
@@ -135,6 +138,8 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 			markNode(node2, refMaps.adlStrColor)
 			if printAdlStr: print(node2["tags"], "is an additional strucutre")
 
+
+	print("found adl1 nodes")
 
 	'''
 	Step (2) - Find a match in tree2 for each node in tree1
@@ -151,13 +156,22 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 
 		else:
 			#print("getting potential matches for",node["tags"], "index:", index1)
+			print("getting potential matches")
 			potentialMatches = utils.getAllPotentialMatches(node, t2Nodes, lang, index1)
+			print("got potential matches")
 			bestMatch = utils.getBestMatch(potentialMatches) 
+			print("got best matches")
 			#print("")
 			if not node["matched"] and not bestMatch == None:
 				utils.matchNodes(node, bestMatch.node, bestMatch.confidence)
+				global numTotalMatches
+				numTotalMatches += 1
+				print("num matches:", numTotalMatches)
 
 			if not utils.additionalDetail(node,lang): index1 += 1
+
+
+	print("found matches - recursing")
 
 	'''
 	Step (3) - Recurse on all children

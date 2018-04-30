@@ -1024,7 +1024,7 @@ int main(int argc, char** argv){
 			if(fname == " " || fname.size() == 0){
 				break;
 			}
-		//for(int i=1; i<argc; i++){
+
 			ifstream f(fname);
 
 			if(!f.good()){

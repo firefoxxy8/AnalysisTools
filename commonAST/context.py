@@ -41,20 +41,6 @@ class Context:
 			(self.grandParentTags == ["\*"] or other.grandParentTags == ["\*"])): return False
 
 
-		'''
-		if self.lookaheadTags == ["\*"] or other.lookaheadTags == ["\*"]: return True
-		if self.parentTags == ["\*"] or other.parentTags == ["\*"]: return True
-
-		if self.lookaheadTags == None and not other.lookaheadTags == None: return False
-		if not self.lookaheadTags == None and other.lookaheadTags == None: return False
-		if self.siblingTags == None and not other.siblingTags == None: return False
-		if not self.siblingTags == None and other.siblingTags == None: return False
-		if self.parentTags == None and not other.parentTags == None: return False
-		if not self.parentTags == None and other.parentTags == None: return False
-		if self.grandParentTags == None and not other.grandParentTags == None: return False
-		if not self.grandParentTags == None and other.grandParentTags == None: return False
-		'''
-
 		return True
 
 	def __str__(self): 

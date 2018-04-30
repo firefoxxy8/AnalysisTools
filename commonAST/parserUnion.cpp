@@ -30,10 +30,23 @@ class Parser{
 				return parseIf(t->level);
 			}else if(t->value == "assignment" || t->value == "augAssign"){
 				return parseAssignment(t);
+			}else if(t->value == "module"){
+				return parseModule();
 			}else{
 				return parseASTNode(t);	
 			}
 		}
+
+
+		Module* parseModule(){
+			getToken();
+			Module* module = new Module();
+			while(getLookaheadToken()->value != "END"){
+					module->children.push_back(parseNode());
+			}
+			return module;
+		}
+
 
 		VariableDecl* parseVariableDecl(){
 			VariableDecl* vd = new VariableDecl();
@@ -48,7 +61,7 @@ class Parser{
 
 
 			//for array declarations
-			if(getLookaheadToken()->value == "IntegerLiteral"){
+			while(getLookaheadToken()->value == "IntegerLiteral"){
 				getToken();
 				ASTNode* il = new ASTNode();
 				il->type = "IntegerLiteral";	

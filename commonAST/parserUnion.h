@@ -100,4 +100,11 @@ class Assignment : public ASTNode{
 
 };
 
+class Module: public ASTNode{
+	public:
+		string getType(){
+			return "Module";
+		}
+};
+
 #endif
