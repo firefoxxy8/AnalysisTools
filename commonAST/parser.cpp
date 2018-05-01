@@ -788,8 +788,6 @@ bool isStmt(string val){
 	}
 
 
-	if(val == "classDef") { cerr << "eq" << endl; }
-
 	string compVal("name");
 	return val == "functionDef" || val == "classDef" || val == "compoundStmt" || val == "return" || val == "assignment" || val == "augAssign" || val == "forLoop" || val == "whileLoop" || val == "do" || val == "ifBlock" || val == "ifStatement" || val == "elseStatement" || val == "importing" || val == "exec" || val == "variableDecl" || val == "try" || val == "except" || val == "raisingException" || val == "switch" || val == "case" || val.compare(0, compVal.length(), compVal) == 0;
 }

@@ -94,7 +94,6 @@ def getAllPotentialMatches(node, t2Nodes,lang, index1, rec=True):
 		if additionalStructure(node2, lang):
 			if not "children" in node2: continue
 			editChildren(node2)
-			#unmatchedChildren = (child for child in node2["children"] if not child["matched"])
 			for _child in node2["children"]:
 				if not additionalDetail(node2, lang) and not _child["matched"]:
 					unmatchedNodes.append([_child, index2]);
@@ -105,6 +104,14 @@ def getAllPotentialMatches(node, t2Nodes,lang, index1, rec=True):
 				index2 += 1
 		elif not additionalDetail(node2, lang):
 				index2 += 1
+
+
+	#first try ones with the same index:
+	for node2 in unmatchedNodes:
+		if node2[1] == index1:
+			confidence = confidenceOfMatch(node, node2[0], node["parent"], node2[0]["parent"], lang, rec, index1, node2[1]) 
+			if confidence == 1:
+				return [match.Match(node2[0], confidence, node2[1])]
 
 
 	for node2 in unmatchedNodes:

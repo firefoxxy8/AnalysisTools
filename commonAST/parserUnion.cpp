@@ -349,8 +349,11 @@ int main(int argc, char** argv){
 	noLevelBreak.push_back("ParmVar");
 	noLevelBreak.push_back("FloatingLiteral");
 	noLevelBreak.push_back("IntegerLiteral");
+	noLevelBreak.push_back("StringLiteral");
+	noLevelBreak.push_back("CXXBoolLiteralExpr");
 	noLevelBreak.push_back("ImplicitCastExpr");
 	noLevelBreak.push_back("DeclRefExpr");
+	noLevelBreak.push_back("CXXUnresolvedConstructExpr");
 
 
 

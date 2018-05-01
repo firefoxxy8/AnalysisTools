@@ -124,7 +124,7 @@ def delAddedTags(node, first):
 (2) For each node in tree1, find the best matching node in tree2
 (3) Recurse on all matched nodes children
 '''
-def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
+def checkChildren(t1Nodes, t2Nodes, parent1, parent2, index = -1):
 
 	global elapsedTime
 	elapsedTime = time.time() - startTime
@@ -160,13 +160,18 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 			node["matched"] = True
 			node["match"] = None
 			node["adlStr"] = True
+			node["index"] = index1
+			index1 += 1
 			markNode(node, refMaps.adlStrColor)
 			if printAdlStr: print(node["tags"], "is an additional strucutre")
-
 		else:
 			#print("getting potential matches for",node["tags"], "index:", index1)
 			#print("getting potential matches")
-			potentialMatches = utils.getAllPotentialMatches(node, t2Nodes, lang, index1)
+			if not index == -1:
+				potentialMatches = utils.getAllPotentialMatches(node, t2Nodes, lang, index)
+			else:
+				potentialMatches = utils.getAllPotentialMatches(node, t2Nodes, lang, index1)
+
 			#print("length of potential matches",len(potentialMatches))
 			bestMatch = utils.getBestMatch(potentialMatches) 
 			if not node["matched"] and not bestMatch == None:
@@ -189,7 +194,7 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 		utils.editChildren(node)
 		if "adlStr" in node and "children" in node: 
 			#print("recursing with the children of", node["tags"], "and t2nodes")
-			checkChildren(node["children"], t2Nodes, node, parent2)
+			checkChildren(node["children"], t2Nodes, node, parent2, node["index"])
 		else:
 			node2 = node["match"].node
 			#print("recursing with the children of", node["tags"], "and", node2["tags"])
