@@ -234,7 +234,7 @@ class ASTMatcherVisitor : public RecursiveASTVisitor<ASTMatcherVisitor> {
 
 			//if it is part of the (init; condition; increment) of a for loop, we don't care about it
 			if(isFlowControl(D, Context)){
-				return false;
+				//return false;
 			}
 
 

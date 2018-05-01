@@ -206,10 +206,10 @@ class Parser{
 			list<ASTNode*> body;
 
 			Token* lt = getLookaheadToken();
-			while(lt->level > level && lt->value != "compoundStmt"){
+			while(lt->level > level && lt->value != "compoundStmt" && lt->value != "classDef"){
 				if(isExpr(lt->value)){
 					body.push_back(parseExpr());
-				}else if(isStmt(lt->value) && lt->value != "classDef"){
+				}else if(isStmt(lt->value)){
 					body.push_back(parseStmt());
 				}else if(getLookaheadToken()->value == "END"){
 					break;
@@ -460,7 +460,7 @@ class Parser{
 
 		While* parseWhile(int level){
 			While* w = new While();
-			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "compoundStmt"){
+			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "compoundStmt" && isExpr(getLookaheadToken()->value)){
 				w->test.push_back(parseExpr());
 			}
 
@@ -787,6 +787,8 @@ bool isStmt(string val){
 		cerr << "checking if " << val << " is a stmt" << endl;
 	}
 
+
+	if(val == "classDef") { cerr << "eq" << endl; }
 
 	string compVal("name");
 	return val == "functionDef" || val == "classDef" || val == "compoundStmt" || val == "return" || val == "assignment" || val == "augAssign" || val == "forLoop" || val == "whileLoop" || val == "do" || val == "ifBlock" || val == "ifStatement" || val == "elseStatement" || val == "importing" || val == "exec" || val == "variableDecl" || val == "try" || val == "except" || val == "raisingException" || val == "switch" || val == "case" || val.compare(0, compVal.length(), compVal) == 0;

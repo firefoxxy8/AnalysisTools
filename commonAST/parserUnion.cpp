@@ -16,14 +16,14 @@ class Parser{
 			visitor = CounterVisitor(nodesToCount);
 		}
 
-		ASTNode* parseNode(){
+		ASTNode* parseNode(int parLevel=-1){
 			Token* t = getToken();
 			if(t->value == "END"){
 				return NULL;	
 			}else if(t->value == "functionDef"){
 				return parseFunction(t);
 			}else if(t->value == "variableDecl"){
-				return parseVariableDecl();
+				return parseVariableDecl(t->level);
 			}else if(t->value == "unaryOp"){
 				return parseUnOp(t->level);
 			}else if(t->value == "ifBlock"){
@@ -34,10 +34,12 @@ class Parser{
 				return parseAssignment(t);
 			}else if(t->value == "forLoop"){
 				return parseFor(t->level);
+			}else if(t->value == "switch"){
+				return parseSwitch(t->level);
 			}else if(t->value == "module"){
 				return parseModule();
 			}else if(find(noLevelBreak.begin(), noLevelBreak.end(), t->value) != noLevelBreak.end()){
-				return parseNoChildren(t);
+				return parseNoChildren(t, parLevel);
 			}else if(t->value == "binaryOp" || t->value == "Call" || t->value == "CXXDeleteExpr"){
 				return parseExprChildren(t);
 			}else{
@@ -48,11 +50,22 @@ class Parser{
 		UnaryOp* parseUnOp(int level){
 			UnaryOp* u = new UnaryOp();
 			u->type = "unaryOp";	
-			if(!isStmt(getLookaheadToken()->value) && getLookaheadToken()->level > level){
-				u->children.push_back(parseNode());	
+			if(!isStmt(getLookaheadToken()->value) && getLookaheadToken()->level > level && getLookaheadToken()->value !="END"){
+				u->children.push_back(parseNode(level));	
 			}
 
 			return u;
+		}
+
+		ASTNode* parseSwitch(int level){
+			ASTNode* node = new ASTNode();
+			node->type = "Switch";
+			while(getLookaheadToken()->value != "compoundStmt"){
+				node->children.push_back(parseNode(level));
+			}
+			
+			node->children.push_back(parseNode(level));
+			return node;
 		}
 
 
@@ -60,11 +73,11 @@ class Parser{
 			For* f = new For();
 			f->type = "For";
 			while(getLookaheadToken()->value != "compoundStmt" && getLookaheadToken()->level > level && getLookaheadToken()->value != "END"){
-				f->children.push_back(parseNode());	
+				f->children.push_back(parseNode(level));	
 			}
 
 			if(getLookaheadToken()->value == "compoundStmt"){
-				f->children.push_back(parseNode());
+				f->children.push_back(parseNode(level));
 			}
 
 			return f;
@@ -80,12 +93,12 @@ class Parser{
 		}
 
 
-		VariableDecl* parseVariableDecl(){
+		VariableDecl* parseVariableDecl(int level){
 			VariableDecl* vd = new VariableDecl();
 			vd->type = "VariableDecl";
 
 			while(getLookaheadToken()->value != "/variableDecl" && getLookaheadToken()->value != "END"){
-				vd->children.push_back(parseNode());
+				vd->children.push_back(parseNode(level));
 			}
 
 			//throwaway </variableDecl> token
@@ -109,9 +122,8 @@ class Parser{
 			Assignment* a = new Assignment();
 			a->type = t->value;
 
-			while(getLookaheadToken()->value != "compoundStmt" && getLookaheadToken()->value != "ifStatement" &&
-				getLookaheadToken()->value != "ifBlock" && getLookaheadToken()->level > t->level){
-				a->children.push_back(parseNode());
+			while(!isStmt(getLookaheadToken()->value) && getLookaheadToken()->level > t->level){
+				a->children.push_back(parseNode(t->level));
 			}
 
 			return a;
@@ -123,7 +135,7 @@ class Parser{
 			ib->type = "IfBlock";
 			while(getLookaheadToken()->level > level && getLookaheadToken()->value != "END" && 
 					(getLookaheadToken()->value == "ifStatement" || getLookaheadToken()->value == "elseStatement")){
-				ib->children.push_back(parseNode());
+				ib->children.push_back(parseNode(level));
 			}
 
 			return ib;
@@ -134,7 +146,7 @@ class Parser{
 			i->type = "If";
 			while(getLookaheadToken()->level >= level && getLookaheadToken()->value != "END" 
 				&& getLookaheadToken()->value != "ifStatement" && getLookaheadToken()->value != "elseStatement"){
-				i->children.push_back(parseNode());
+				i->children.push_back(parseNode(level));
 			}
 
 			return i;
@@ -148,7 +160,7 @@ class Parser{
 
 			while((getLookaheadToken()->level > t->level || (find(noLevelBreak.begin(), noLevelBreak.end(), getLookaheadToken()->value)) != noLevelBreak.end()) 
 					&& getLookaheadToken()->value != "END"){
-				func->children.push_back(parseNode());
+				func->children.push_back(parseNode(t->level));
 			}
 
 			return func;
@@ -159,17 +171,22 @@ class Parser{
 			node->type = t->value;
 			
 			while(!isStmt(getLookaheadToken()->value) && (getLookaheadToken()->level > t->level || 
-				find(noLevelBreak.begin(), noLevelBreak.end(), getLookaheadToken()->value) != noLevelBreak.end())){
-				node->children.push_back(parseNode());
+				find(noLevelBreak.begin(), noLevelBreak.end(), getLookaheadToken()->value) != noLevelBreak.end())
+				&& getLookaheadToken()->value != "END"){
+				node->children.push_back(parseNode(t->level));
 			}
 
 			return node;
 
 		}
 
-		ASTNode* parseNoChildren(Token* t){
+		ASTNode* parseNoChildren(Token* t, int parLevel){
 			ASTNode* p = new ASTNode();
 			p->type = t->value;
+
+			if(t->level > parLevel && parLevel != -1 && getLookaheadToken()->value != "END"){
+				//p->children.push_back(parseNode(t->level));
+			}
 
 			return p;
 		}
@@ -184,7 +201,7 @@ class Parser{
 			}
 
 			while(getLookaheadToken()->level > t->level || find(noLevelBreak.begin(), noLevelBreak.end(), getLookaheadToken()->value) != noLevelBreak.end()){
-				node->children.push_back(parseNode());
+				node->children.push_back(parseNode(t->level));
 			}
 
 			return node;

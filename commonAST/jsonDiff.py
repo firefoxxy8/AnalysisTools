@@ -3,6 +3,7 @@ import sys
 import utils
 import match
 import refMaps
+import time
 
 printAdlDetail = False
 printAdlStr = False
@@ -17,6 +18,8 @@ adlDetail2 = 0
 unmatched1 = 0
 unmatched2 = 0
 numTotalMatches = 0
+elapsedTime = 0
+startTime = 0
 
 '''
 Given a node, mark it and all of its children recursivley, until we reach the leaves
@@ -123,6 +126,11 @@ def delAddedTags(node, first):
 '''
 def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 
+	global elapsedTime
+	elapsedTime = time.time() - startTime
+	if elapsedTime > 240:
+		return;
+
 	#print("checking children")
 
 	'''
@@ -214,9 +222,10 @@ def runner():
 	else:
 		utils.editChildren(jsonObj1)
 		utils.editChildren(jsonObj2)
+
+		global startTime
+		startTime = time.time()
 		checkChildren(jsonObj1["children"], jsonObj2["children"], jsonObj1, jsonObj2)
-		#if not grayCount1 == grayCount2:
-		#	print("error: number of gray nodes in each graph is not equal. We have a problem")
 
 		
 		markAllNodes(jsonObj1["children"])
