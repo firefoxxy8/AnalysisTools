@@ -6,12 +6,14 @@
 #include <fstream>
 #include <stdlib.h>
 #include <vector>
+#include <algorithm>
 #include "traversalUnion.h"
 
 
 
 string getIndentation(int level);
 
+		
 
 class Token{
 	public:

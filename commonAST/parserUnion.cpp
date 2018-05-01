@@ -1,4 +1,3 @@
-//#include "parser.h"
 #include "assert.h"
 #include "parserUnion.h"
 
@@ -6,6 +5,7 @@ using namespace std;
 
 //prototypes
 bool printDebug = false;
+vector<string> noLevelBreak;
 
 class Parser{
 	public:
@@ -22,8 +22,6 @@ class Parser{
 				return NULL;	
 			}else if(t->value == "functionDef"){
 				return parseFunction(t);
-			}else if(t->value == "ParmVar" || t->value == "FloatingLiteral" || t->value == "ImplicitCastExpr"){
-				return parseDeclRef(t);
 			}else if(t->value == "variableDecl"){
 				return parseVariableDecl();
 			}else if(t->value == "unaryOp"){
@@ -38,6 +36,10 @@ class Parser{
 				return parseFor(t->level);
 			}else if(t->value == "module"){
 				return parseModule();
+			}else if(find(noLevelBreak.begin(), noLevelBreak.end(), t->value) != noLevelBreak.end()){
+				return parseNoChildren(t);
+			}else if(t->value == "binaryOp" || t->value == "Call" || t->value == "CXXDeleteExpr"){
+				return parseExprChildren(t);
 			}else{
 				return parseASTNode(t);	
 			}
@@ -46,7 +48,7 @@ class Parser{
 		UnaryOp* parseUnOp(int level){
 			UnaryOp* u = new UnaryOp();
 			u->type = "unaryOp";	
-			if(getLookaheadToken()->level > level){
+			if(!isStmt(getLookaheadToken()->value) && getLookaheadToken()->level > level){
 				u->children.push_back(parseNode());	
 			}
 
@@ -144,27 +146,28 @@ class Parser{
 			func->type = "Function";
 			getToken(); //name of the function 
 
-			while(getLookaheadToken()->value == "ParmVar" || getLookaheadToken()->value == "DeclRefExpr" 
-				|| getLookaheadToken()->value == "FloatingLiteral" || getLookaheadToken()->value == "ImplicitCastExpr" && getLookaheadToken()->value != "END"){
-				func->children.push_back(parseParameter());
-			}
-
-			while(getLookaheadToken()->level > t->level && getLookaheadToken()->value != "END"){
+			while((getLookaheadToken()->level > t->level || (find(noLevelBreak.begin(), noLevelBreak.end(), getLookaheadToken()->value)) != noLevelBreak.end()) 
+					&& getLookaheadToken()->value != "END"){
 				func->children.push_back(parseNode());
-
-				while(getLookaheadToken()->value == "ParmVar" || getLookaheadToken()->value == "DeclRefExpr" 
-					|| getLookaheadToken()->value == "FloatingLiteral" || getLookaheadToken()->value == "ImplicitCastExpr" && getLookaheadToken()->value != "END"){
-
-					func->children.push_back(parseParameter());
-				}
-
 			}
 
 			return func;
 		}
 
-		ASTNode* parseParameter(){
-			Token* t = getToken();
+		ASTNode* parseExprChildren(Token* t){
+			ASTNode* node = new ASTNode();	
+			node->type = t->value;
+			
+			while(!isStmt(getLookaheadToken()->value) && (getLookaheadToken()->level > t->level || 
+				find(noLevelBreak.begin(), noLevelBreak.end(), getLookaheadToken()->value) != noLevelBreak.end())){
+				node->children.push_back(parseNode());
+			}
+
+			return node;
+
+		}
+
+		ASTNode* parseNoChildren(Token* t){
 			ASTNode* p = new ASTNode();
 			p->type = t->value;
 
@@ -172,13 +175,6 @@ class Parser{
 		}
 
 	
-		ASTNode* parseDeclRef(Token* t){
-			ASTNode* p = new ASTNode();
-			p->type = t->value;
-
-			return p;
-		}
-
 		ASTNode* parseASTNode(Token* t){
 			ASTNode* node = new ASTNode();
 			if(t->value.find("name") != string::npos || t->value.find("base:") != string::npos){ 
@@ -187,22 +183,17 @@ class Parser{
 				node->type = t->value;
 			}
 
-			while(getLookaheadToken()->level > t->level && getLookaheadToken()->value != "END"){
+			while(getLookaheadToken()->level > t->level || find(noLevelBreak.begin(), noLevelBreak.end(), getLookaheadToken()->value) != noLevelBreak.end()){
 				node->children.push_back(parseNode());
-
-				Token* lt = getLookaheadToken();
-				while(lt->value == "ParmVar" || lt->value == "DeclRefExpr" || lt->value == "FloatingLiteral" || lt->value == "ImplicitCastExpr"){
-					node->children.push_back(parseParameter());
-					lt = getLookaheadToken();
-				}
-
 			}
-
-
 
 			return node;
 		}
 
+
+		bool isStmt(string val){
+			return (val == "CompoundStmt" || val == "ifBlock" || val == "Function" || val == "If" || val == "For" || val == "do" || val == "While");
+		}
 		
 
 		Token* getToken(){
@@ -338,6 +329,12 @@ int main(int argc, char** argv){
 	string inputFile = argv[1];
 
 	map<string, vector<string> > nodesToCount;
+	noLevelBreak.push_back("ParmVar");
+	noLevelBreak.push_back("FloatingLiteral");
+	noLevelBreak.push_back("IntegerLiteral");
+	noLevelBreak.push_back("ImplicitCastExpr");
+	noLevelBreak.push_back("DeclRefExpr");
+
 
 
 	//skips the name of the excecutable and skips the filename

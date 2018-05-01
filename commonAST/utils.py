@@ -112,7 +112,7 @@ def getAllPotentialMatches(node, t2Nodes,lang, index1, rec=True):
 
 		if not confidence == -1:
 			potentialMatches.append(match.Match(node2[0], confidence, node2[1]))
-			print("adding confidence of matching:", node["tags"], ":", index1, "with", node2[0]["tags"],":", node2[1], "conf: ", confidence)
+			#print("adding confidence of matching:", node["tags"], ":", index1, "with", node2[0]["tags"],":", node2[1], "conf: ", confidence)
 
 		if confidence == 1:
 			return [match.Match(node2[0], confidence, node2[1])]

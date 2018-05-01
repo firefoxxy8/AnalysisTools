@@ -203,7 +203,25 @@ class Parser{
 			ClassDef* cd = new ClassDef();
 			cd->name = parseIdentifier();
 			cd->bases = parseBases();
-			cd->body = parseBody(level);	
+			list<ASTNode*> body;
+
+			Token* lt = getLookaheadToken();
+			while(lt->level > level && lt->value != "compoundStmt"){
+				if(isExpr(lt->value)){
+					body.push_back(parseExpr());
+				}else if(isStmt(lt->value) && lt->value != "classDef"){
+					body.push_back(parseStmt());
+				}else if(getLookaheadToken()->value == "END"){
+					break;
+				}else{
+					cerr << "ERROR: Attempted to add value which is not an EXPR or STMT" << endl;
+					exit(1);
+				}
+
+				lt = getLookaheadToken();
+			}
+
+			cd->body = body;	
 			return cd;
 		}
 
@@ -506,7 +524,24 @@ class Parser{
 				i->compoundStmt = parseCompoundStmt();
 				if(printDebug) { cout<< "Done parsing sub if's compound stmt" << endl;}
 			}else{
-				i->body = parseBody(level);	
+				list<ASTNode*> body;
+				Token* lt = getLookaheadToken();
+				while(lt->level > level && lt->value != "compoundStmt" && lt->value != "ifStatement" && lt->value != "elseStatement"){
+					if(isExpr(lt->value)){
+						body.push_back(parseExpr());
+					}else if(isStmt(lt->value)){
+						body.push_back(parseStmt());
+					}else if(getLookaheadToken()->value == "END"){
+						break;
+					}else{
+						cerr << "ERROR: Attempted to add value which is not an EXPR or STMT" << endl;
+						exit(1);
+					}
+
+					lt = getLookaheadToken();
+				}
+
+				i->body = body; 
 			}
 
 			return i;
