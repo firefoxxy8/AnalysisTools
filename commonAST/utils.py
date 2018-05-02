@@ -104,18 +104,18 @@ def getAllPotentialMatches(node, t2Nodes,lang, index1, rec=True):
 
 	index2 = 0
 	for node2 in t2Nodes:
-		if not node2["matched"]:
-			unmatchedNodes.append([node2, index2])
-
 		if additionalStructure(node2, lang):
 			if not "children" in node2: continue
 			editChildren(node2)
 			unmatchedChildren = (child for child in node2["children"] if not child["matched"])
 			for unmatchedChild in unmatchedChildren:
-				unmatchedNodes.append([unmatchedChild, index2]);
+				if not additionalDetail(node2, lang):
+					unmatchedNodes.append([unmatchedChild, index2]);
+					index2 += 1
 
-		if not additionalDetail(node2, lang):
-			index2 += 1
+		elif not node2["matched"] and not additionalDetail(node2, lang):
+				index2 += 1
+				unmatchedNodes.append([node2, index2])
 
 
 	'''
@@ -131,8 +131,9 @@ def getAllPotentialMatches(node, t2Nodes,lang, index1, rec=True):
 
 	for node2 in unmatchedNodes:
 		confidence = confidenceOfMatch(node, node2[0], node["parent"], node2[0]["parent"], lang, rec, index1, node2[1]) 
-		#if not confidence == -1:
 		potentialMatches.append(match.Match(node2[0], confidence, node2[1]))
+		if confidence >= .5:
+			return [match.Match(node2[0], confidence, node2[1])]
 				
 	return potentialMatches
 
@@ -210,7 +211,7 @@ def calculateConfidence(node1, node2, level, lang, index1, index2):
 		if totalChildren == 0: return 1
 
 		#part1 = number of children
-		if (len(node2["children"]) - numUnmatchable) - (len(node1["children"]) - numUnmatchable1) == 0: part1 = .33
+		if (len(node2["children"]) - numUnmatchable) - (len(node1["children"]) - numUnmatchable1) == 0: part1 = 1  #.5
 		else: part1 = 0
 
 
@@ -219,10 +220,10 @@ def calculateConfidence(node1, node2, level, lang, index1, index2):
 		#part2 = (numMatch / totalChildren)  / 3
 
 		#part3 = differences in indicies
-		part3 = (1 - abs(index1 - index2)) / 3
+		#part3 = (1 - abs(index1 - index2)) / 2
 
 		#return  part1 + part2 + part3
-		return  part1 + part3
+		return  part1 #+ part3
 
 
 	if not "children" in node1 and not "children" in node2: return 1

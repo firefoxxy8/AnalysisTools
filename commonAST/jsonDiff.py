@@ -16,6 +16,7 @@ adlDetail1 = 0
 adlDetail2 = 0
 unmatched1 = 0
 unmatched2 = 0
+numTotalMatches = 0
 
 '''
 Given a node, mark it and all of its children recursivley, until we reach the leaves
@@ -142,6 +143,7 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 	'''
 	index1 = 0
 	for node in t1Nodes:	
+		if utils.additionalDetail(node,lang): continue
 		if utils.additionalStructure(node,lang):
 			node["matched"] = True
 			node["match"] = None
@@ -152,10 +154,13 @@ def checkChildren(t1Nodes, t2Nodes, parent1, parent2):
 		else:
 			#print("getting potential matches for",node["tags"], "index:", index1)
 			potentialMatches = utils.getAllPotentialMatches(node, t2Nodes, lang, index1)
+			print("length of potential matches",len(potentialMatches))
 			bestMatch = utils.getBestMatch(potentialMatches) 
-			#print("")
 			if not node["matched"] and not bestMatch == None:
 				utils.matchNodes(node, bestMatch.node, bestMatch.confidence)
+				global numTotalMatches
+				numTotalMatches += 1
+				print("num matches:", numTotalMatches)
 
 			if not utils.additionalDetail(node,lang): index1 += 1
 
